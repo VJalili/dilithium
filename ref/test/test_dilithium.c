@@ -7,6 +7,14 @@
 #define MLEN 59
 #define NTESTS 10000
 
+void print_hex(const char *label, const uint8_t *data, size_t data_len) {
+    printf("%s: ", label);
+    for (size_t i = 0; i < data_len; i++) {
+        printf("%02X", data[i]);
+    }
+    printf("\n");
+}
+
 int main(void)
 {
   size_t i, j;
@@ -61,5 +69,99 @@ int main(void)
   printf("CRYPTO_SECRETKEYBYTES = %d\n", CRYPTO_SECRETKEYBYTES);
   printf("CRYPTO_BYTES = %d\n", CRYPTO_BYTES);
 
+  printf("\n-------------------- my own test begin---------------------\n");
+
+  //uint8_t pk[CRYPTO_PUBLICKEYBYTES];   // Public key
+  //uint8_t sk[CRYPTO_SECRETKEYBYTES];   // Secret (private) key
+  uint8_t sig[CRYPTO_BYTES];           // Signature
+  size_t siglen;                       // Signature length
+
+  // Your custom data
+  uint8_t message[] = "Your custom byte array data here";
+  size_t message_len = sizeof(message);
+
+  // Generate a key pair
+  if (crypto_sign_keypair(pk, sk) != 0) {
+      fprintf(stderr, "Failed to generate key pair\n");
+      return 1;
+  }
+
+  // Print the public and private keys
+  print_hex("Public Key", pk, CRYPTO_PUBLICKEYBYTES);
+  print_hex("Private Key", sk, CRYPTO_SECRETKEYBYTES);
+
+  // Sign the message
+  if (crypto_sign_signature(sig, &siglen, message, message_len, sk) != 0) {
+      fprintf(stderr, "Failed to sign message\n");
+      return 1;
+  }
+
+  // Print the signature
+  print_hex("Signature", sig, siglen);
+
+  // Verify the signature
+  if (crypto_sign_verify(sig, siglen, message, message_len, pk) != 0) {
+      fprintf(stderr, "Failed to verify signature\n");
+      return 1;
+  } else {
+      printf("Signature verified successfully!\n");
+  }
+
+  printf("\n-------------------- my own test end---------------------\n");
+
   return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/
+
+int main(void) {
+    uint8_t pk[CRYPTO_PUBLICKEYBYTES];   // Public key
+    uint8_t sk[CRYPTO_SECRETKEYBYTES];   // Secret (private) key
+    uint8_t sig[CRYPTO_BYTES];           // Signature
+    size_t siglen;                       // Signature length
+
+    // Your custom data
+    uint8_t message[] = "Your custom byte array data here";
+    size_t message_len = sizeof(message);
+
+    // Generate a key pair
+    if (crypto_sign_keypair(pk, sk) != 0) {
+        fprintf(stderr, "Failed to generate key pair\n");
+        return 1;
+    }
+
+    // Sign the message
+    if (crypto_sign_signature(sig, &siglen, message, message_len, sk) != 0) {
+        fprintf(stderr, "Failed to sign message\n");
+        return 1;
+    }
+
+    // Verify the signature
+    if (crypto_sign_verify(sig, siglen, message, message_len, pk) != 0) {
+        fprintf(stderr, "Failed to verify signature\n");
+        return 1;
+    } else {
+        printf("Signature verified successfully!\n");
+    }
+
+    return 0;
+}*/
+
+
+
+
+
+
